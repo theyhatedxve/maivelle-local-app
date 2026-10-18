@@ -1,56 +1,57 @@
-# Welcome to your Expo app 👋
+﻿# Maivelle
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Everything You Value, in One Place.
 
-## Get started
+A single-owner, offline-first Android app built with Expo SDK 58, React Native,
+JavaScript/JSX, and NativeWind. Architecture v1.1 is the approved product specification;
+Brand Identity v1.0 is the visual reference.
 
-1. Install dependencies
+## Start here
 
-   ```bash
-   npm install
-   ```
+- [Project structure and implementation status](docs/architecture.md)
+- [Brand tokens and supplied assets](docs/branding/README.md)
+- [Shared UI components and usage](docs/components.md)
+- [JavaScript and NativeWind migration](docs/nativewind-migration.md)
+- [Windows, EAS, and Android device instructions](docs/android-build.md)
+- [Original branding kit](docs/branding/Maivelle_Complete_Branding_Kit.pdf)
 
-2. Start the app
+## Development
 
-   ```bash
-   npx expo start
-   ```
+Run from `D:\Maivelle App\maivelle` in PowerShell:
 
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **src/app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```powershell
+npx.cmd expo start --dev-client --host lan --clear
 ```
 
-This command will move the starter code to the **example** directory and create a blank **src/app** directory where you can start developing.
+Use the installed Maivelle development APK. For USB, enable USB debugging,
+run `adb reverse tcp:8081 tcp:8081`, and connect the development launcher to
+`http://127.0.0.1:8081`. ADB must be installed/on PATH or invoked by full path.
 
-### Other setup steps
+```powershell
+npm.cmd run test:ui
+npx.cmd expo lint
+```
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+## Current scope
 
-## Learn more
+Source organization:
 
-To learn more about developing your project with Expo, look at the following resources:
+- `src/frontend`: components, feature UI, navigation, hooks, stores, and branding.
+- `src/backend`: local database, security, and services (still scaffolds).
+- `src/shared`: shared types and pure utilities.
+- `src/app`: thin Expo Router entry wrappers and reserved route folders.
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+The minimal Maivelle entry screen replaces the Expo demos. The folder map, brand tokens, asset
+registry, and explicitly marked module scaffolds are prepared. The five-tab
+screens and application features are not implemented yet. No database, vault,
+app lock, reminders, or backups should be considered functional or secure.
 
-## Join the community
+New UI uses `src/frontend/theme/tokens.js` through `useAppTheme`. Do not create another
+palette or redesign the supplied logos. Custom fonts are specified but not yet
+installed. Native icon/splash configuration changes require another EAS build.
 
-Join our community of developers creating universal apps.
+Keep personal records, keys, and backups outside the source tree. There is no
+remote backend, analytics, cloud sync, advertising, or family sharing.
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Expo tutorials, sample artwork, demo components, and the reset script have been
+removed. The five-tab navigation and feature screens remain planned.
