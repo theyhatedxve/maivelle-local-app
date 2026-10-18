@@ -14,6 +14,7 @@ const tones = {
   default: 'text-text dark:text-dark-text',
   secondary: 'text-text-secondary dark:text-dark-text-secondary',
   primary: 'text-primary dark:text-dark-primary',
+  success: 'text-success-text dark:text-dark-success-text',
   error: 'text-error-text dark:text-dark-error-text',
   onPrimary: 'text-on-primary dark:text-dark-on-primary',
 };

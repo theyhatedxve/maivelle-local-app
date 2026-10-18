@@ -16,21 +16,32 @@ maivelle/
   src/
     app/                  Expo Router entry points only
       _layout.jsx         Thin wrapper for frontend/navigation/root-layout
-      index.jsx           Thin wrapper for frontend/components/layout/brand-entry
       (onboarding)/       Reserved: welcome and first setup
       (auth)/             Reserved: app setup and unlock
-      (tabs)/             Reserved: Home, Plan, Notes, Vault, More
-      notes/ tasks/ events/ vault/
+      (tabs)/             Active: Home, Plan, Notes, Vault, More
+        _layout.jsx       Thin wrapper for frontend/navigation/tab-layout
+        index.jsx         Home; the only active / route
+        plan.jsx notes.jsx vault.jsx more.jsx
+      notes/
+        [id].jsx          Full-screen note preview editor wrapper
+      vault/
+        [id].jsx          Fictional credential detail wrapper
+        new.jsx           Credential form preview wrapper
+      tasks/ events/
       finance/ budgets/ medicine/ time-tracker/
-      search/ settings/ folders/ activity-log/
+      settings/
+        index.jsx         Settings wrapper
+        about.jsx         About wrapper
+        privacy.jsx       Preview privacy information wrapper
+      search/ folders/ activity-log/
     frontend/
       components/
         ui/               Shared text, cards, buttons, fields, and states
-        layout/           Screen containers, headers, brand entry
+        layout/           Screen containers and headers
         forms/            Shared form presentation
         charts/           Local-data visualizations
       features/
-        dashboard/ notes/ tasks/ calendar/ vault/
+        dashboard/ plan/ notes/ tasks/ calendar/ vault/ more/
         finance/ budgets/ medicine/ time-tracker/
         search/ settings/ folders/ activity-log/
       navigation/         Root layout and future navigator implementations
@@ -89,8 +100,8 @@ own these conventions instead of repeating a README in each implementation folde
 ## Dependency flow
 
 `src/app` contains only Expo Router route wrappers and reserved route folders.
-The root wrapper re-exports `frontend/navigation/root-layout.jsx`; the index
-wrapper re-exports `frontend/components/layout/brand-entry.jsx`. All actual UI
+The root wrapper re-exports `frontend/navigation/root-layout.jsx`; tab wrappers
+re-export `frontend/navigation/tab-layout.jsx` and their frontend feature screens. All actual UI
 implementations live in `frontend`. Keep one conventional route root rather
 than configuring a custom router directory or creating duplicate entry points.
 
@@ -112,11 +123,19 @@ Use Zustand for lightweight UI state, not as a second persistent database.
 
 ## Navigation rollout
 
-The reserved route folders contain README files only. Do not add empty `.jsx`
-files: Expo expects each route to export a working screen. When five-tab
-navigation is implemented, move or replace the temporary brand entry and current
-navigation together. Do not create both `src/app/index.jsx` and
-`src/app/(tabs)/index.jsx` as independent `/` routes. There is one route root:
+The five-tab foundation is active. Home lives at `src/app/(tabs)/index.jsx`;
+the former root index and temporary brand-entry component are removed. Plan has
+interactive calendar/task sample views; Notes has a searchable list and full-screen
+editor. Vault has a fictional credential list/detail/form preview; More links
+to Settings, Privacy, and About. Upcoming tools are read-only menu entries.
+`plan` and `more` feature
+folders compose the existing module areas without adding persistence models.
+The icon-and-label tab bar uses the existing theme, honors the bottom safe area,
+and grows vertically with font scaling. Android Back follows visited tab history.
+
+Other reserved route folders contain README files only. Do not add empty `.jsx`
+files: Expo expects each route to export a working screen. Do not create both
+`src/app/index.jsx` and `src/app/(tabs)/index.jsx` as independent `/` routes. There is one route root:
 `src/app`, never a second top-level `app` folder. Keep route files thin and put
 their UI/navigation implementations in `frontend`.
 
@@ -126,14 +145,57 @@ separate files. Reuse editors and modals where appropriate.
 
 ## Current implementation status
 
-Working: Expo SDK 58 project, minimal Maivelle brand entry, physical Android development-build connection,
+Working: Expo SDK 58 project, five-tab navigation with a pastel Home dashboard and starter
+screens, physical Android development-build connection,
 EAS project linking/build profiles, JavaScript alias/lint configuration, brand token
 exports, theme hook, brand constants, and original asset registry.
 
 Implemented shared UI: AppText, Button, Card, TextField, Screen, ScreenHeader,
-EmptyState, LoadingState, ErrorState. The brand entry consumes Screen/AppText.
-See [component API and checks](components.md). Feature CRUD, authentication, and
-the five-tab navigator remain unimplemented.
+EmptyState, LoadingState, ErrorState. Tab screens consume the shared library.
+The pastel UI step adds AppIcon, IconButton, SummaryTile, SearchField, compact
+cards, and input/button icon slots. Home follows the approved UI reference;
+its counts, income, and tasks are explicitly labeled samples stored only in
+`frontend/features/dashboard/data/preview.js`. They are never database seeds.
+Tile shortcuts, the header icon, and View all open existing tab previews.
+Plan switches between a monthly calendar/day agenda and tasks. Search, priority
+and status filters, and completion/undo work on sample data only. Samples are
+created relative to the date Plan is opened in `features/plan/data/preview.js`.
+Task changes survive switching views/tabs but reset on reload; Home totals are
+separate static design samples. New event/task actions remain disabled. The
+calendar uses local date helpers and preserves 48px targets with horizontal
+scrolling on narrow screens. No database, editor, notification scheduling, or
+new dependency was introduced in this step.
+Notes now has six disposable samples and a root-level NotesPreviewProvider
+shared by the Notes tab and `/notes/[id]` editor. Search includes titles, body,
+tags, and checklist text. Favorites/checklist filters, pinning, plain-text and
+Markdown insertion, and checklist editing work on in-memory state. New preview
+notes are also session-only. Edits immediately update the list; returning with
+Back does not discard them. Reload resets samples and removes preview drafts.
+Missing draft IDs show a return-to-Notes action. No localStorage, SQLite, server,
+rich-text renderer, or database repository was added. Home totals remain static
+design samples, not live counts from the preview contexts.
+Vault now displays six immutable fictional records with reserved `.example`
+addresses. Its context changes only session favorite flags. Search/tag/favorite
+filters and full-screen detail/form navigation work, but no real credential
+store, unlock, encryption, saving, copying, generation, or external website
+opening is implemented. A fixed, public demo password can be revealed and
+automatically hides when its route loses focus. The form can be explored and
+prefilled with demo values; saving is disabled and values are discarded on exit.
+Missing IDs show a return-to-Vault action. No security backend or dependency
+was added. Before wiring real records, gate every Vault route on actual unlock
+and implement encrypted storage/key handling; these preview routes are not a
+plaintext fallback for the security scaffold.
+More now has the reference-style tool menu and functional Settings/About links.
+Settings shows the current system theme and English app copy; manual theme
+selection, saved preferences, app lock, backups, notifications, and data
+management remain unavailable. Privacy describes the actual preview behavior.
+About uses the supplied icon, brand copy, and version from Expo configuration.
+These full-screen routes support Back and direct-link fallback to More. MenuRow
+is a shared primitive; rows without actions are read-only, not dead buttons.
+The now-unused generic tab placeholder is removed. No new dependency, storage,
+permissions request, or backend operation was introduced in this step.
+See [component API and checks](components.md). Feature CRUD and authentication
+remain unimplemented. No placeholder button simulates saving or unlocking.
 
 Scaffold only: feature models, repositories, schema/migrations, notifications,
 backups, reports, attachment handling, stores, money helpers, and security.

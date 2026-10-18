@@ -41,9 +41,21 @@ Source organization:
 - `src/shared`: shared types and pure utilities.
 - `src/app`: thin Expo Router entry wrappers and reserved route folders.
 
-The minimal Maivelle entry screen replaces the Expo demos. The folder map, brand tokens, asset
-registry, and explicitly marked module scaffolds are prepared. The five-tab
-screens and application features are not implemented yet. No database, vault,
+The Home / Plan / Notes / Vault / More navigation foundation is active. Home
+follows the approved pastel UI reference with the supplied app icon, summary
+tiles, and upcoming tasks. Plan includes calendar/day-agenda and task views with
+search, filters, and sample completion toggles. Notes has a searchable list and
+full-screen editor with favorites, pins, Markdown tools, and checklists. New
+preview notes and edits live only in memory and reset on reload. Vault has
+fictional list/detail/form screens with filters, favorites, and a masked sample
+password. Secure saving, copying, generation, and unlock are not implemented.
+The credential form discards edits on exit; do not use it for real credentials.
+More links to Settings, Privacy, and About; upcoming tools have clear status
+labels. Settings follows the system theme and does not enable protection,
+backups, or reminders. Plan add/edit actions still await storage. Home
+records are clearly labeled sample data. The folder
+map, brand tokens, asset registry, and module scaffolds are prepared.
+Persistent application features remain unimplemented. No database, vault,
 app lock, reminders, or backups should be considered functional or secure.
 
 New UI uses `src/frontend/theme/tokens.js` through `useAppTheme`. Do not create another
@@ -54,4 +66,6 @@ Keep personal records, keys, and backups outside the source tree. There is no
 remote backend, analytics, cloud sync, advertising, or family sharing.
 
 Expo tutorials, sample artwork, demo components, and the reset script have been
-removed. The five-tab navigation and feature screens remain planned.
+removed. Reload the development app to see the five tabs; navigation needs no
+new native dependencies or APK build. Verify each tab, Android Back history,
+both system themes, and larger text on the phone before feature implementation.

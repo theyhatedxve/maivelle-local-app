@@ -4,3 +4,8 @@ export { Card } from './card';
 export { EmptyState } from './empty-state';
 export { ErrorState } from './error-state';
 export { LoadingState } from './loading-state';
+export { AppIcon } from './app-icon';
+export { IconButton } from './icon-button';
+export { SummaryTile } from './summary-tile';
+export { SegmentedControl } from './segmented-control';
+export { MenuRow } from './menu-row';

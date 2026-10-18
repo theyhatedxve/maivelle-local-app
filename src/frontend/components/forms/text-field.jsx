@@ -7,7 +7,7 @@ export function TextField({
   label, hint, error, containerStyle, containerClassName = '', className = '', style,
   ref, editable = true, nativeID, onFocus, onBlur, accessibilityLabel, accessibilityHint,
   accessibilityState, secureTextEntry, autoComplete, importantForAutofill,
-  autoCorrect, spellCheck, multiline, ...props
+  autoCorrect, spellCheck, multiline, leading, ...props
 }) {
   const theme = useAppTheme();
   const generatedId = useId();
@@ -20,7 +20,9 @@ export function TextField({
   return (
     <View className={['gap-sm', containerClassName].join(' ')} style={containerStyle}>
       <AppText variant="caption" nativeID={labelId}>{label}</AppText>
-      <TextInput {...props} ref={ref} nativeID={inputId}
+      <View className={['flex-row items-center rounded-button border bg-surface-muted dark:bg-dark-surface-muted px-lg', border].join(' ')}>
+        {leading && <View className="pr-sm">{leading}</View>}
+        <TextInput {...props} ref={ref} nativeID={inputId}
         aria-labelledby={accessibilityLabel ? undefined : labelId}
         accessibilityLabel={accessibilityLabel ?? label}
         accessibilityHint={[message, accessibilityHint].filter(Boolean).join('. ') || undefined}
@@ -34,9 +36,10 @@ export function TextField({
         placeholderTextColor={theme.colors.textSecondary} selectionColor={theme.colors.primary}
         onFocus={(event) => { setFocused(true); onFocus?.(event); }}
         onBlur={(event) => { setFocused(false); onBlur?.(event); }}
-        className={['rounded-md border px-lg py-md text-body-large bg-surface dark:bg-dark-surface text-text dark:text-dark-text', border, multiline ? 'min-h-multiline align-top' : 'min-h-touch', editable ? 'opacity-100' : 'opacity-disabled', Platform.OS === 'web' ? 'font-sans' : 'font-native', className].join(' ')}
+        className={['flex-1 py-md text-body-large bg-transparent text-text dark:text-dark-text', multiline ? 'min-h-multiline align-top' : 'min-h-touch', editable ? 'opacity-100' : 'opacity-disabled', Platform.OS === 'web' ? 'font-sans' : 'font-native', className].join(' ')}
         style={style}
       />
+      </View>
       {message && <AppText variant="caption" tone={error ? 'error' : 'secondary'}
         accessibilityRole={error ? 'alert' : undefined}
         accessibilityLiveRegion="polite">{message}</AppText>}

@@ -56,7 +56,7 @@ favicon. The template adaptive artwork was removed so it cannot override the
 supplied app icon. Native configuration is JSON, so its build-time background
 colors mirror `tokens.js`; keep them synchronized when changing brand values.
 The Expo splash overlay and tutorial screens are removed. The current entry
-screen displays the supplied logo and slogan using the shared theme.
+Home screen displays the supplied logo and slogan using the shared theme.
 Native icon/splash changes require a new Android development build.
 
 Do not use the PDF presentation board as an icon. Producing dedicated adaptive
@@ -64,6 +64,14 @@ foreground/monochrome exports and testing Android icon masks remains a later
 asset-preparation step. No image-generation or logo redesign was performed.
 
 ## Rules for new UI
+
+The user also approved `maivelle-pastel-ui-reference.png` as the screen layout
+reference. The first implementation covers shared primitives, icon tabs, and
+Home; the remaining pictured screens are future work. Preserve the PDF's exact
+brand palette, typography scale, spacing, and touch targets. `surfaceMuted` and
+`successText` are centralized additions for tinted inputs and readable income
+values in both themes. The reference's sample records are not actual user data.
+
 
 Use `useAppTheme()` and shared components. Avoid literal feature-screen colors,
 new spacing scales, or alternate fonts. Use `BRAND_ASSETS` for brand imagery

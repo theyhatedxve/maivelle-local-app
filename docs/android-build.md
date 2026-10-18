@@ -14,7 +14,9 @@ EAS compiles source code and must never receive application records or secrets.
   artwork and Brand Identity v1.0 colors. A new native build is required to see
   these changes; the first APK still contains the old native assets.
 - Expo tutorial screens and animated overlay are removed. The JavaScript entry
-  screen now shows Maivelle branding; five-tab navigation is still planned.
+  Home screen now shows Maivelle branding, with Home / Plan / Notes / Vault / More
+  navigation and presentation-only starter screens. Reload Metro to see these
+  JavaScript changes; they require no new native modules or APK build.
 - Linked EAS project: `@devdb01/maivelle`.
 - Project ID: `e251f00b-1744-4d50-afc7-588e8a712092`.
 - First development build: https://expo.dev/accounts/devdb01/projects/maivelle/builds/e0e42196-eb53-402a-b4c4-a01705e9999b

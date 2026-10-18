@@ -10,7 +10,7 @@ const backgrounds = {
 
 export function Button({
   label, onPress, variant = 'primary', loading = false, disabled = false,
-  className = '', style, accessibilityLabel, accessibilityState, ...props
+  className = '', style, accessibilityLabel, accessibilityState, leading, ...props
 }) {
   const theme = useAppTheme();
   const unavailable = disabled || loading;
@@ -25,6 +25,7 @@ export function Button({
       className={['min-h-touch min-w-touch px-screen py-md rounded-button flex-row items-center justify-center gap-sm', backgrounds[variant] ?? backgrounds.primary, disabled ? 'opacity-disabled' : 'active:opacity-pressed', className].join(' ')}
       style={style}>
       {loading && <ActivityIndicator color={color} accessible={false} aria-hidden />}
+      {!loading && leading}
       <AppText variant="button" tone={variant === 'secondary' ? 'primary' : 'onPrimary'} className="shrink text-center">{label}</AppText>
     </Pressable>
   );

@@ -1,9 +1,15 @@
 import { View } from 'react-native';
 
-export function Card({ variant = 'default', className = '', style, ...props }) {
+const surfaces = {
+  default: 'bg-surface dark:bg-dark-surface',
+  selected: 'bg-surface-selected dark:bg-dark-surface-selected',
+  muted: 'bg-surface-muted dark:bg-dark-surface-muted',
+};
+
+export function Card({ variant = 'default', compact = false, className = '', style, ...props }) {
   return (
     <View {...props}
-      className={['p-screen rounded-xl border border-border dark:border-dark-border', variant === 'selected' ? 'bg-surface-selected dark:bg-dark-surface-selected' : 'bg-surface dark:bg-dark-surface', className].join(' ')}
+      className={[compact ? 'p-lg rounded-lg' : 'p-screen rounded-xl', 'border border-border dark:border-dark-border', surfaces[variant] ?? surfaces.default, className].join(' ')}
       style={style}
     />
   );

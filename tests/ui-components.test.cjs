@@ -57,6 +57,78 @@ const { colors } = require('../src/frontend/theme/tokens.js');
 const render = (component, props) => renderToStaticMarkup(React.createElement(component, props));
 const noAction = () => {};
 
+test('vault preview search combines metadata, tags and favorites without searching passwords', () => {
+  const { filterCredentials } = require('../src/frontend/features/vault/utils/filter-credentials.js');
+  const { VAULT_DEMO_RECORDS } = require('../src/frontend/features/vault/data/preview.js');
+  const records = VAULT_DEMO_RECORDS.map((record, index) => ({ ...record, favorite: index === 0, password: 'excluded-secret-value' }));
+  const original = JSON.stringify(records);
+  assert.equal(filterCredentials(records, '  ORBIT  ')[0].id, 'demo-orbit');
+  assert.equal(filterCredentials(records, 'maivelle.example').length, 4);
+  assert.equal(filterCredentials(records, '', 'cloud').length, 2);
+  assert.equal(filterCredentials(records, '', 'all', true).length, 1);
+  assert.equal(filterCredentials(records, '', 'cloud', true).length, 0);
+  assert.equal(filterCredentials(records, 'excluded-secret-value').length, 0);
+  assert.equal(filterCredentials(records, 'missing-result').length, 0);
+  assert.equal(JSON.stringify(records), original);
+});
+
+test('note search includes body, tags and checklist text without mutating source order', () => {
+  const { findNotes } = require('../src/frontend/features/notes/utils/notes.js');
+  const { createNotesPreview } = require('../src/frontend/features/notes/data/preview.js');
+  const notes = createNotesPreview(new Date('2026-10-18T12:00:00Z'));
+  const before = JSON.stringify(notes);
+  assert.equal(findNotes(notes, '  TRAVEL  ')[0].id, 'sample-note-2');
+  assert.equal(findNotes(notes, 'three priorities')[0].id, 'sample-note-1');
+  assert.equal(findNotes(notes, 'a little inspiration')[0].id, 'sample-note-5');
+  assert.equal(findNotes(notes, '', 'favorites').length, 2);
+  assert.equal(findNotes(notes, '', 'checklists').length, 2);
+  assert.equal(findNotes(notes, 'no-matching-note').length, 0);
+  const reordered = findNotes([{ ...notes[0], updatedAt: '2020-01-01' }, notes[1]]);
+  assert.equal(reordered[0].id, notes[0].id, 'Pinned notes stay above newer unpinned notes');
+  assert.equal(JSON.stringify(notes), before);
+});
+
+test('Markdown tools preserve surrounding text and clamp stale selections', () => {
+  const { formatNoteText } = require('../src/frontend/features/notes/utils/notes.js');
+  const bold = formatNoteText('hello world', { start: 6, end: 11 }, 'bold');
+  assert.equal(bold.text, 'hello **world**');
+  assert.deepEqual(bold.selection, { start: 15, end: 15 });
+  assert.equal(formatNoteText('word', { start: 0, end: 4 }, 'italic').text, '*word*');
+  assert.equal(formatNoteText('hello', { start: 500, end: 600 }, 'bullet').text, 'hello\n- List item');
+  assert.equal(formatNoteText('link', { start: -1, end: 4 }, 'link').text, '[link](https://)');
+  assert.equal(formatNoteText('text', null, 'numbered').text, 'text\n1. List item');
+});
+
+test('calendar month navigation clamps end-of-month dates and crosses years', () => {
+  const { moveMonth, dateKey } = require('../src/frontend/features/calendar/utils/calendar.js');
+  assert.equal(dateKey(moveMonth(new Date(2024, 0, 31, 12), 1)), '2024-02-29');
+  assert.equal(dateKey(moveMonth(new Date(2025, 0, 31, 12), 1)), '2025-02-28');
+  assert.equal(dateKey(moveMonth(new Date(2025, 11, 15, 12), 1)), '2026-01-15');
+  assert.equal(dateKey(moveMonth(new Date(2025, 0, 15, 12), -1)), '2024-12-15');
+});
+
+test('calendar grids contain complete Sunday-first weeks with unique local dates', () => {
+  const { monthDays } = require('../src/frontend/features/calendar/utils/calendar.js');
+  for (const [year, month, expectedDays] of [[2024, 1, 29], [2025, 1, 28], [2026, 7, 31]]) {
+    const days = monthDays(new Date(year, month, 1, 12));
+    assert.equal(days.length % 7, 0);
+    assert.equal(days[0].date.getDay(), 0);
+    assert.equal(days.at(-1).date.getDay(), 6);
+    assert.equal(days.filter(day => day.inMonth).length, expectedDays);
+    assert.equal(new Set(days.map(day => day.key)).size, days.length);
+  }
+});
+
+test('segmented controls announce their group, choices, and selected state', () => {
+  const { SegmentedControl } = require('../src/frontend/components/ui/segmented-control.jsx');
+  const html = render(SegmentedControl, { label: 'Plan view', value: 'calendar', onChange: noAction,
+    options: [{ value: 'calendar', label: 'Calendar' }, { value: 'tasks', label: 'Tasks' }] });
+  assert.match(html, /role="tablist"/);
+  assert.match(html, /aria-label="Plan view"/);
+  assert.equal((html.match(/role="tab"/g) || []).length, 2);
+  assert.equal((html.match(/aria-selected="true"/g) || []).length, 1);
+});
+
 test('application source remains JavaScript/JSX with no TypeScript-only syntax', () => {
   const parser = require('@babel/parser');
   function check(dir) {
@@ -140,6 +212,8 @@ test('small text and button labels meet 4.5:1 contrast in both themes', () => {
     const pairs = [
       [palette.text, palette.background],
       [palette.textSecondary, palette.surface],
+      [palette.textSecondary, palette.surfaceMuted],
+      [palette.successText, palette.surface],
       [palette.errorText, palette.surface],
       [palette.onPrimary, palette.primary],
       [palette.onPrimary, palette.errorText],
