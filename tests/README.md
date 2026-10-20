@@ -1,6 +1,6 @@
 # tests
 
-`ui-components.test.cjs` contains sixteen JavaScript migration, accessibility, calendar, note search/formatting, vault metadata filtering, contrast, and NativeWind compilation checks
+`ui-components.test.cjs` contains twenty-four JavaScript migration, accessibility, calendar, income amount/date/aggregate/chart/native-Intl compatibility, note search/formatting, vault metadata filtering, setup validation, secure generator sampling/failure, contrast, and NativeWind compilation checks
 for the shared UI library. Run `npm.cmd run test:ui`. It uses Node's test runner,
 React Native Web, and existing Expo Babel dependencies; no test framework was added.
 

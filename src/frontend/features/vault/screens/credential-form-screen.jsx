@@ -25,7 +25,7 @@ export default function CredentialFormScreen() {
     <TextField label="Username / email" placeholder="demo@maivelle.example" value={form.username}
       autoCapitalize="none" autoComplete="off" importantForAutofill="no" onChangeText={(value) => change('username', value)} />
     <DemoPassword />
-    <Button label="Generate password" variant="secondary" disabled accessibilityHint="Password generation will be implemented in a later step." />
+    <Button label="Generate password" variant="secondary" onPress={() => router.push('/vault/generate-password')} />
     <TextField label="Website (optional)" placeholder="https://orbit.example" value={form.website}
       autoCapitalize="none" keyboardType="url" onChangeText={(value) => change('website', value)} />
     <TextField label="Tag (optional)" placeholder="e.g. work" value={form.tag} autoCapitalize="none" onChangeText={(value) => change('tag', value)} />

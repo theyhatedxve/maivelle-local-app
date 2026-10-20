@@ -13,7 +13,9 @@ export default function SettingsScreen() {
       <AppText variant="caption" tone="secondary">APP PREFERENCES</AppText>
       <Card compact>
         <MenuRow icon="color-palette-outline" label="Theme" value={`System · ${theme.isDark ? 'Dark' : 'Light'}`} />
-        <MenuRow icon="lock-closed-outline" label="App lock" value="Unavailable" />
+        <MenuRow icon="lock-closed-outline" label="App lock" value="Preview only" onPress={() => router.push('/unlock')} />
+        <MenuRow icon="key-outline" label="Vault unlock preview" onPress={() => router.push('/vault-unlock')} />
+        <MenuRow icon="sparkles-outline" label="Welcome and setup preview" onPress={() => router.push('/welcome')} />
         <MenuRow icon="cloud-upload-outline" label="Auto backup" value="Unavailable" />
         <MenuRow icon="file-tray-outline" label="Data management" value="Coming next" />
       </Card>

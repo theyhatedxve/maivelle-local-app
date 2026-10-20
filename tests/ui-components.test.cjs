@@ -57,6 +57,109 @@ const { colors } = require('../src/frontend/theme/tokens.js');
 const render = (component, props) => renderToStaticMarkup(React.createElement(component, props));
 const noAction = () => {};
 
+test('setup preview validates required input, length and confirmation', () => {
+  const { validateSetupPassword } = require('../src/frontend/features/auth/utils/preview-validation.js');
+  assert.ok(validateSetupPassword('', ''));
+  assert.ok(validateSetupPassword('short', 'short'));
+  assert.ok(validateSetupPassword('longenough', 'different'));
+  assert.equal(validateSetupPassword('longenough', 'longenough'), '');
+});
+
+test('generator honors length, selected classes and every enabled group', async () => {
+  const { generatePassword, CHARACTER_GROUPS } = require('../src/frontend/features/password-generator/utils/generate-password.js');
+  const bytes = async (count) => new Uint8Array(require('node:crypto').randomBytes(count));
+  for (const length of [8, 20, 128]) {
+    const result = await generatePassword({ length, options: { uppercase: true, lowercase: true, numbers: true, symbols: true } }, bytes);
+    assert.equal(result.length, length);
+    for (const group of Object.values(CHARACTER_GROUPS)) assert.ok([...result].some((character) => group.includes(character)));
+  }
+  const digits = await generatePassword({ length: 20, options: { numbers: true } }, bytes);
+  assert.match(digits, /^\d{20}$/);
+});
+
+test('generator rejects biased byte range instead of reducing every byte modulo pool size', async () => {
+  const { generatePassword } = require('../src/frontend/features/password-generator/utils/generate-password.js');
+  const bytes = async () => {
+    const buffer = new Uint8Array(256).fill(255);
+    buffer.set([250, 251, 252, 253, 254, 255, 0, 1, 2, 3, 4, 5, 6, 7]);
+    return buffer;
+  };
+  assert.equal(await generatePassword({ length: 8, options: { numbers: true } }, bytes), '01234567');
+});
+
+test('generator fails closed for invalid settings, bad entropy and stalled providers', async () => {
+  const { generatePassword } = require('../src/frontend/features/password-generator/utils/generate-password.js');
+  for (const length of [7, 129, 8.5, NaN]) await assert.rejects(generatePassword({ length, options: { numbers: true } }, async () => new Uint8Array(256)), /length/);
+  await assert.rejects(generatePassword({ length: 8, options: {} }, async () => new Uint8Array(256)), /group/);
+  await assert.rejects(generatePassword({ length: 8, options: { numbers: true } }), /unavailable/);
+  await assert.rejects(generatePassword({ length: 8, options: { numbers: true } }, async () => { throw new Error('provider failed'); }), /provider failed/);
+  await assert.rejects(generatePassword({ length: 8, options: { numbers: true } }, async () => new Uint8Array(1)), /invalid data/);
+  await assert.rejects(generatePassword({ length: 8, options: { numbers: true } }, async () => new Uint8Array(256).fill(255)), /could not finish/);
+  await assert.rejects(generatePassword({ length: 8, options: { numbers: true, uppercase: true } }, async () => new Uint8Array(256)), /could not finish/);
+});
+
+test('income formatting works when native Intl rejects BigInt and preserves every centavo', () => {
+  const { formatIncome } = require('../src/frontend/features/finance/utils/income.js');
+  const original = Intl.NumberFormat.prototype.formatToParts;
+  try {
+    Intl.NumberFormat.prototype.formatToParts = function (value) {
+      if (typeof value === 'bigint') throw new TypeError('Cannot convert BigInt to number');
+      assert.equal(typeof value, 'number');
+      assert.ok(Number.isSafeInteger(value));
+      return original.call(this, value);
+    };
+    for (const [minor, digits] of [[0, '000'], [1, '001'], [99, '099'], [100, '100'], [101, '101'],
+      [10800000, '10800000'], [Number.MAX_SAFE_INTEGER, '9007199254740991']]) {
+      assert.equal(formatIncome(minor).replace(/\D/g, ''), digits);
+    }
+  } finally {
+    Intl.NumberFormat.prototype.formatToParts = original;
+  }
+});
+
+test('income decimal input becomes exact centavos and rejects invalid amounts/dates', () => {
+  const { parseIncomeAmount, formatIncome, validIncomeDate } = require('../src/frontend/features/finance/utils/income.js');
+  assert.equal(parseIncomeAmount(' 12.3 '), 1230);
+  assert.equal(parseIncomeAmount('0.10') + parseIncomeAmount('0.20'), 30);
+  for (const value of ['', '-1', '1.234', '1e3', '1,200', 'abc', '90071992547410']) assert.equal(parseIncomeAmount(value), null);
+  assert.equal(parseIncomeAmount('90071992547409.91'), Number.MAX_SAFE_INTEGER);
+  assert.ok(formatIncome(Number.MAX_SAFE_INTEGER).endsWith('91'));
+  assert.equal(validIncomeDate('2024-02-29'), true);
+  assert.equal(validIncomeDate('2025-02-29'), false);
+  assert.equal(validIncomeDate('2026-02-30'), false);
+  assert.equal(validIncomeDate('2026-13-01'), false);
+});
+
+test('income totals respect month/year, category, transaction kind and currency', () => {
+  const { selectIncome, totalIncome } = require('../src/frontend/features/finance/utils/income.js');
+  const { createIncomePreview } = require('../src/frontend/features/finance/data/income-preview.js');
+  const today = new Date(2026, 0, 18, 12);
+  const records = createIncomePreview(today);
+  const before = JSON.stringify(records);
+  const mixed = [...records, { ...records[0], id: 'expense', kind: 'expense' }, { ...records[0], id: 'usd', currency: 'USD' }];
+  assert.equal(totalIncome(selectIncome(mixed, { today })), 10800000);
+  assert.equal(totalIncome(selectIncome(mixed, { today, allTime: true })), 27000000);
+  assert.equal(totalIncome(selectIncome(mixed, { today, category: 'Consulting' })), 5720000);
+  assert.equal(selectIncome(records, { today: new Date(2030, 0, 1) }).length, 0);
+  assert.equal(JSON.stringify(records), before);
+  assert.throws(() => totalIncome([{ amountMinor: Number.MAX_SAFE_INTEGER }, { amountMinor: 1 }]));
+});
+
+test('weekly and monthly income chart buckets reconcile with the displayed totals', () => {
+  const { incomeBuckets, totalIncome } = require('../src/frontend/features/finance/utils/income.js');
+  const { createIncomePreview } = require('../src/frontend/features/finance/data/income-preview.js');
+  const today = new Date(2026, 0, 18, 12);
+  const records = createIncomePreview(today);
+  const weekly = incomeBuckets(records, today);
+  assert.equal(weekly.length, 5);
+  assert.equal(totalIncome(weekly), 10800000);
+  assert.equal(weekly[0].amountMinor, 8600000);
+  const monthly = incomeBuckets(records, today, true);
+  assert.deepEqual(monthly.map((bucket) => bucket.key), ['2025-12', '2026-01']);
+  assert.equal(totalIncome(monthly), 27000000);
+  assert.equal(totalIncome(incomeBuckets([], today)), 0);
+});
+
 test('vault preview search combines metadata, tags and favorites without searching passwords', () => {
   const { filterCredentials } = require('../src/frontend/features/vault/utils/filter-credentials.js');
   const { VAULT_DEMO_RECORDS } = require('../src/frontend/features/vault/data/preview.js');

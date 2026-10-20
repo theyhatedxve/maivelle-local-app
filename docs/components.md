@@ -192,3 +192,40 @@ version, and 320px layouts with no overflow or runtime exceptions. Previews:
 [dark Settings](previews/settings-dark.png), [About](previews/about-light.png).
 Physical Android Back, TalkBack, system theme changes, and larger text remain
 manual checks. Settings does not enable protection, reminders, or backups.
+
+Income composes the same screens/cards/controls with a small native View-based
+bar chart; no chart package was added. Its eight fictional PHP entries cover
+the current and previous month. Month/category filters, totals, charts, and
+recent/all entry lists share the same filtered records. Weekly groups mean
+days 1–7, 8–14, etc.; narrow screens can scroll the chart horizontally. Each bar
+has an accessible period/amount label. Values use integer centavos and are
+formatted without floating-point division. The form accepts plain decimal
+amounts and ISO calendar dates, shows validation/amount previews, and disables
+saving. Fields reset on exit. These helpers implement the preview only, not
+accounts, financial reports, budgets, or storage.
+
+Formatting splits integer decimal digits and passes only the whole-peso Number
+to native Intl, keeping the centavos separate. This avoids the Android
+`Cannot convert BigInt to number` crash. A regression test reproduces native
+Intl rejecting BigInt and checks zero, sub-peso amounts, and the safe-integer
+limit.
+
+All 20 tests pass, including exact amount parsing, date validity, period/category/
+currency/kind filtering, safe-integer limits, and chart/total reconciliation.
+Lint and Android/web exports pass. Browser checks cover both entry shortcuts,
+filters/totals, all/recent entries, validation, form prefill/discard, unavailable
+saving, direct-link Back fallback, and light/dark 320px layouts without runtime
+exceptions. Previews: [Income](previews/income-light.png),
+[Categories](previews/income-categories-light.png),
+[form](previews/income-form-light.png), [dark form](previews/income-form-dark.png).
+Physical Android keyboard, formatting, Back, TalkBack and large text remain
+manual checks.
+
+Phase 1 composes the existing primitives into Welcome/setup/recovery and
+app/Vault unlock previews. PreviewPasswordField pairs the shared masked field
+with a labeled reveal/hide action; no alternative design tokens were added.
+Password Generator uses shared controls and theme-colored native switches,
+accessible length steppers, and initially masked secure random output. Output
+clears on blur/background or settings changes. There is no strength claim,
+clipboard integration, or Vault saving. The setup and unlock flows cannot
+enable protection. See [Phase 1 review](phase-one.md) for checks and screenshots.

@@ -13,15 +13,20 @@ EAS compiles source code and must never receive application records or secrets.
 - Native launcher/splash configuration now references the supplied Maivelle
   artwork and Brand Identity v1.0 colors. A new native build is required to see
   these changes; the first APK still contains the old native assets.
-- Expo tutorial screens and animated overlay are removed. The JavaScript entry
-  Home screen now shows Maivelle branding, with Home / Plan / Notes / Vault / More
-  navigation and presentation-only starter screens. Reload Metro to see these
-  JavaScript changes; they require no new native modules or APK build.
+- Expo tutorial screens and animated overlay are removed. Welcome now opens
+  before the Home / Plan / Notes / Vault / More preview. Phase 1 includes
+  setup/unlock previews and a password generator. Its Expo Crypto dependency
+  requires the updated development APK; ordinary JavaScript edits use Metro.
 - Linked EAS project: `@devdb01/maivelle`.
 - Project ID: `e251f00b-1744-4d50-afc7-588e8a712092`.
 - First development build: https://expo.dev/accounts/devdb01/projects/maivelle/builds/e0e42196-eb53-402a-b4c4-a01705e9999b
 - First build status: FINISHED (Android development APK). The user confirmed the
   app runs on the physical phone through Metro after USB connection repair.
+- Phase 1 development build (Expo Crypto and current native artwork):
+  https://expo.dev/accounts/devdb01/projects/maivelle/builds/8d303351-d471-4c23-ae3e-d00460b1f1a7
+  Check this page for its live status and installation artifact.
+  Status: **FINISHED**. It has not yet been installed or reviewed on the phone
+  in this phase. The development APK needs Metro; no standalone release was made.
 
 ## Windows setup and first development build
 
@@ -50,6 +55,12 @@ npx.cmd expo start --dev-client --clear
 Use the same network on the phone and computer and open the development build.
 Development builds use Metro; they are not the final offline installation.
 Native module/config changes require a new build.
+
+Phase 1 adds `expo-crypto ~58.0.7` for password generation. Install an updated
+development APK using the development build command above. The previous APK can
+still show the UI; generation fails with an actionable message if Expo Crypto is
+missing. No insecure randomness fallback is used. The setup/unlock interfaces
+remain demos even in the updated APK; encryption and actual protection are not built.
 
 ## Standalone builds
 

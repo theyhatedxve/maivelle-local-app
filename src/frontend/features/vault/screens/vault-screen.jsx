@@ -20,6 +20,7 @@ export default function VaultScreen() {
     <ScreenHeader title="My Vault" subtitle="A preview of your credential space."
       trailing={<IconButton icon="person" label="Open More preview" onPress={() => router.navigate('/(tabs)/more')} />} />
     <VaultPreviewNotice />
+    <Button label="Preview Vault unlock" variant="secondary" onPress={() => router.push('/vault-unlock')} />
     <View className="flex-row items-end gap-sm">
       <View className="flex-1"><SearchField label="Search demo credentials" placeholder="Search names or tags..." value={query} onChangeText={setQuery} /></View>
       <IconButton icon="filter-outline" label={showTags ? 'Hide vault tags' : 'Show vault tags'} accessibilityState={{ expanded: showTags }} onPress={() => setShowTags(!showTags)} />

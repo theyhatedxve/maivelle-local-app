@@ -57,7 +57,7 @@ export default function HomeScreen() {
         <SummaryTile label="Open tasks" value={summary.openTasks} icon="checkbox-outline"
           style={{ width: tileWidth }} onPress={() => openTab('plan')} />
         <SummaryTile label="This month's income" value={summary.income} icon="trending-up-outline" tone="success"
-          style={{ width: tileWidth }} onPress={() => openTab('more')} />
+          style={{ width: tileWidth }} onPress={() => router.push('/finance/income')} />
       </View>
 
       <View className="gap-sm">

@@ -8,6 +8,7 @@ export default function PrivacyScreen() {
       <AppText variant="sectionTitle">What this preview does</AppText>
       <AppText>Notes and task changes stay in memory and reset when the app reloads.</AppText>
       <AppText>Vault entries are fictional. Secure saving, vault unlocking, and app lock are not available.</AppText>
+      <AppText>Setup and unlock screens use public demo values only. Generated passwords use device randomness, remain in memory, and clear when you leave the generator or background the app.</AppText>
       <AppText>No backup or restore operation is available yet.</AppText>
     </Card>
     <Card className="gap-md">

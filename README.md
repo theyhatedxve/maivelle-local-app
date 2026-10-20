@@ -13,6 +13,7 @@ Brand Identity v1.0 is the visual reference.
 - [Shared UI components and usage](docs/components.md)
 - [JavaScript and NativeWind migration](docs/nativewind-migration.md)
 - [Windows, EAS, and Android device instructions](docs/android-build.md)
+- [Phase 1 screens and review walkthrough](docs/phase-one.md)
 - [Original branding kit](docs/branding/Maivelle_Complete_Branding_Kit.pdf)
 
 ## Development
@@ -48,13 +49,22 @@ search, filters, and sample completion toggles. Notes has a searchable list and
 full-screen editor with favorites, pins, Markdown tools, and checklists. New
 preview notes and edits live only in memory and reset on reload. Vault has
 fictional list/detail/form screens with filters, favorites, and a masked sample
-password. Secure saving, copying, generation, and unlock are not implemented.
+password. Secure saving, copying, and real unlock are not implemented.
 The credential form discards edits on exit; do not use it for real credentials.
-More links to Settings, Privacy, and About; upcoming tools have clear status
+Income Tracker has sample monthly/all-time totals, category filters, a bar
+chart, and recent entries. Open it from More or the Home income tile. Its
+Log income form validates amounts/dates but cannot save yet.
+More links to Income, Password Generator, Settings, Privacy, and About; upcoming tools have clear status
 labels. Settings follows the system theme and does not enable protection,
 backups, or reminders. Plan add/edit actions still await storage. Home
 records are clearly labeled sample data. The folder
 map, brand tokens, asset registry, and module scaffolds are prepared.
+Welcome now opens on a fresh app session. Get started walks through demo setup;
+Explore app preview enters the tabs. Settings can replay welcome/setup and
+app/Vault unlock previews. These flows use public demo values and enable no
+protection. Password Generator uses secure Expo Crypto random bytes, supports
+8–128 characters and selectable groups, masks output initially, and clears on
+leave/background. Install an updated development APK for this native module.
 Persistent application features remain unimplemented. No database, vault,
 app lock, reminders, or backups should be considered functional or secure.
 
@@ -66,6 +76,6 @@ Keep personal records, keys, and backups outside the source tree. There is no
 remote backend, analytics, cloud sync, advertising, or family sharing.
 
 Expo tutorials, sample artwork, demo components, and the reset script have been
-removed. Reload the development app to see the five tabs; navigation needs no
-new native dependencies or APK build. Verify each tab, Android Back history,
-both system themes, and larger text on the phone before feature implementation.
+removed. Reload to see Welcome and enter the app preview. Verify the screens,
+Android Back history, keyboard, both themes, and larger text on the phone.
+Phase 1 implementation is ready for review; Phase 2 has not started.

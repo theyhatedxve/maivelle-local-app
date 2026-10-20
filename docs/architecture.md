@@ -16,8 +16,8 @@ maivelle/
   src/
     app/                  Expo Router entry points only
       _layout.jsx         Thin wrapper for frontend/navigation/root-layout
-      (onboarding)/       Reserved: welcome and first setup
-      (auth)/             Reserved: app setup and unlock
+      (onboarding)/       Welcome, setup preview, recovery explanation
+      (auth)/             App and Vault unlock previews
       (tabs)/             Active: Home, Plan, Notes, Vault, More
         _layout.jsx       Thin wrapper for frontend/navigation/tab-layout
         index.jsx         Home; the only active / route
@@ -27,8 +27,12 @@ maivelle/
       vault/
         [id].jsx          Fictional credential detail wrapper
         new.jsx           Credential form preview wrapper
+        generate-password.jsx Secure random generator wrapper
       tasks/ events/
-      finance/ budgets/ medicine/ time-tracker/
+      finance/
+        income.jsx        Income overview wrapper
+        log-income.jsx    Income form preview wrapper
+      budgets/ medicine/ time-tracker/
       settings/
         index.jsx         Settings wrapper
         about.jsx         About wrapper
@@ -41,6 +45,7 @@ maivelle/
         forms/            Shared form presentation
         charts/           Local-data visualizations
       features/
+        onboarding/ auth/ password-generator/
         dashboard/ plan/ notes/ tasks/ calendar/ vault/ more/
         finance/ budgets/ medicine/ time-tracker/
         search/ settings/ folders/ activity-log/
@@ -84,8 +89,8 @@ This folder reorganization was explicitly requested by the user. Functional
 Architecture v1.1 and Brand Identity v1.0 are unchanged. The backend remains
 local code shipped inside the app, not a server or separate deployable project.
 
-Each frontend feature has a `types.js` scaffold with its purpose documented in
-the file. Supporting layers
+Reserved frontend modules have a `types.js` scaffold with their purpose documented
+in the file. Implemented UI-only features add only the files they need. Supporting layers
 have small, explicitly unimplemented JavaScript files. These export no runtime
 functions. They are locations for future work, not completed services.
 Subfolders for feature screens/components/hooks are added with their first real
@@ -177,7 +182,7 @@ design samples, not live counts from the preview contexts.
 Vault now displays six immutable fictional records with reserved `.example`
 addresses. Its context changes only session favorite flags. Search/tag/favorite
 filters and full-screen detail/form navigation work, but no real credential
-store, unlock, encryption, saving, copying, generation, or external website
+store, real unlock, encryption, saving, copying, or external website
 opening is implemented. A fixed, public demo password can be revealed and
 automatically hides when its route loses focus. The form can be explored and
 prefilled with demo values; saving is disabled and values are discarded on exit.
@@ -194,8 +199,35 @@ These full-screen routes support Back and direct-link fallback to More. MenuRow
 is a shared primitive; rows without actions are read-only, not dead buttons.
 The now-unused generic tab placeholder is removed. No new dependency, storage,
 permissions request, or backend operation was introduced in this step.
+Income Tracker is now available from More and the Home income tile. Fictional
+PHP entries drive the monthly/all-time totals, weekly/monthly chart, category
+breakdown, and recent/all entry views. Amounts and totals use integer centavos;
+formatting preserves cents through the safe integer range. Expense records and
+other currencies are excluded rather than mixed. Date keys remain local dates.
+The Log income form validates decimal amounts and calendar dates, supports
+sample prefilling, and discards edits on exit. Saving remains disabled. No
+transactions, budgets, accounts, persistence, or chart library were added.
+The shared money scaffold remains separate from these finance preview helpers.
 See [component API and checks](components.md). Feature CRUD and authentication
-remain unimplemented. No placeholder button simulates saving or unlocking.
+remain unimplemented. Saving stays disabled; unlock interfaces are explicitly
+public demos rather than access control.
+
+Phase 1 adds Welcome, three-step setup, recovery explanation, and separate
+app/Vault unlock previews. A transient navigation flag routes the initial Home
+entry to Welcome and allows exploration; it is not authentication. Setup values
+are discarded, never stored or used to configure security. Unlock screens accept
+public demo constants only. Every Vault route remains a fictional preview.
+Settings can replay the flows; Vault has an unlock-preview shortcut.
+
+The Password Generator is available from More and the credential form. Expo
+Crypto's async random bytes API supplies secure randomness. Byte rejection avoids
+modulo bias; whole-candidate rejection includes every enabled character group
+without fixing positions. Length is 8–128. Invalid settings disable generation;
+missing native Crypto fails visibly without a weak randomness fallback. Output
+is masked initially and clears on blur/background, settings changes, and pending
+operation invalidation. No copy, credential saving, or real unlock is implemented.
+The native dependency requires an updated development APK. See
+[the Phase 1 review guide](phase-one.md) for the walkthrough and validation.
 
 Scaffold only: feature models, repositories, schema/migrations, notifications,
 backups, reports, attachment handling, stores, money helpers, and security.

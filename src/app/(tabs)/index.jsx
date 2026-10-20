@@ -1,1 +1,1 @@
-export { default } from '@/frontend/features/dashboard/screens/home-screen';
+export { default } from '@/frontend/navigation/home-entry';

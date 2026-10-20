@@ -30,7 +30,9 @@
             "backgroundColor": "#171122"
           }
         }
-      ]
+      ],
+      "expo-sharing",
+      "expo-image"
     ],
     "experiments": {
       "reactCompiler": true
